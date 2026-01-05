@@ -1,0 +1,88 @@
+/**
+ * CW Menu Admin Styles
+ * Styles for menu item custom fields in WordPress admin
+ */
+
+/* Checkbox field wrapper */
+.cw-field {
+    margin: 6px 0 12px;
+    padding: 8px 10px;
+    background: #f0f6fc;
+    border-left: 3px solid #2271b1;
+    border-radius: 3px;
+}
+
+.cw-field label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.cw-field input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+}
+
+/* Image upload field */
+.cw-image-field {
+    margin: 8px 0 14px;
+    padding: 10px 12px;
+    background: #fefefe;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.cw-image-field label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #1d2327;
+}
+
+.cw-image-field .button {
+    margin-right: 8px;
+}
+
+/* Image preview */
+.cw-preview {
+    margin-top: 10px;
+}
+
+.cw-preview img {
+    max-width: 80px;
+    height: auto;
+    display: block;
+    margin-bottom: 8px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+}
+
+.cw-preview em {
+    color: #777;
+    font-size: 12px;
+}
+
+/* Remove button */
+.cw-remove-image {
+    color: #b32d2e !important;
+    border-color: #b32d2e !important;
+}
+
+.cw-remove-image:hover {
+    background: #b32d2e !important;
+    color: #fff !important;
+}
+
+/* Loading state */
+.cw-loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+/* Highlight when checkbox is checked */
+.cw-field.cw-active {
+    background: #e7f5e9;
+    border-left-color: #00a32a;
+}

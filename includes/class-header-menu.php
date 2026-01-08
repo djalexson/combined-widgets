@@ -138,15 +138,15 @@ class Header_Menu {
         }
         wp_enqueue_style( 'magnific-popup' );
         wp_enqueue_script( 'magnific-popup' );
-        wp_enqueue_script( 'cw-custom-popup', CW_URL . 'assets/header-menu/custom-popup.js', [ 'jquery', 'magnific-popup' ], CW_VERSION, true );
+				  wp_enqueue_script('as-custom-popup',CW_URL.'assets/header-menu/custom-popup.js',['jquery','magnific-popup'],CW_VERSION,true);
+
     }
 
     /**
      * Enqueue frontend assets
      */
     public static function enqueue_front_assets() {
-        wp_enqueue_style( 'cw-custom-header', CW_URL . 'assets/header-menu/custom-header.css', [], CW_VERSION );
-        wp_enqueue_script( 'cw-custom-header', CW_URL . 'assets/header-menu/custom-header.js', [ 'jquery' ], CW_VERSION, true );
+        // Frontend assets if needed
     }
 
     /**

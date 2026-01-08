@@ -2,14 +2,14 @@
 /**
  * Plugin Name: Combined Widgets & Header Menu
  * Description: Объединённый плагин: Elementor виджеты (SBalance) + Header Menu Helper. Включает CSS, JS анимации, форм-виджеты и функции для меню.
- * Version: 1.1.0
+ * Version: 1.3.2
  * Author: Alex
  * Text Domain: combined-widgets
  */
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'CW_VERSION', '1.2.0' );
+define( 'CW_VERSION', '1.3.2' );
 define( 'CW_PATH', plugin_dir_path( __FILE__ ) );
 define( 'CW_URL', plugin_dir_url( __FILE__ ) );
 
@@ -41,6 +41,16 @@ add_action( 'plugins_loaded', function () {
 
     // Register CSS/JS for Elementor widgets
     \CW\Assets::init();
+    
+    // Clear contact forms cache when CF7 forms are saved/deleted
+    add_action( 'save_post_wpcf7_contact_form', function() {
+        delete_transient( 'cw_contact_forms_list' );
+    } );
+    add_action( 'delete_post', function( $post_id ) {
+        if ( get_post_type( $post_id ) === 'wpcf7_contact_form' ) {
+            delete_transient( 'cw_contact_forms_list' );
+        }
+    } );
     
 } );
 ?>

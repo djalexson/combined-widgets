@@ -3096,3 +3096,66 @@ a.header-widget__phone-number--mob .header-widget__phone-number-wrap {
         font-size: 13px;
     }
 }
+
+/* ========================================
+   Magnific Popup Animations
+   ======================================== */
+
+/* Zoom-in animation */
+.mfp-zoom-in.mfp-bg {
+    opacity: 0;
+    transition: all 0.3s ease-out;
+}
+
+.mfp-zoom-in.mfp-ready.mfp-bg {
+    opacity: 0.8;
+}
+
+.mfp-zoom-in.mfp-removing.mfp-bg {
+    opacity: 0;
+}
+
+.mfp-zoom-in .mfp-content {
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.3s ease-in-out;
+}
+
+.mfp-zoom-in.mfp-ready .mfp-content {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.mfp-zoom-in.mfp-removing .mfp-content {
+    opacity: 0;
+    transform: scale(0.8);
+}
+
+/* Popup overlay */
+.cw-popup-open {
+    overflow: hidden;
+}
+
+/* Close button enhancement */
+.mfp-close {
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+
+.mfp-close:hover {
+    opacity: 1;
+}
+
+/* Popup container */
+.mfp-inline-holder .mfp-content {
+    width: 100%;
+    max-width: 600px;
+    margin: 20px auto;
+}
+
+@media (max-width: 768px) {
+    .mfp-inline-holder .mfp-content {
+        max-width: 90%;
+        margin: 20px auto;
+    }
+}

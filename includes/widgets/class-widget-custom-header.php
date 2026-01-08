@@ -1050,12 +1050,8 @@ class Custom_Header extends Widget_Base {
         $menu = $settings['menu'];
         $logo = $settings['logo']['url'];
         $logo_text = $settings['logo_text'];
-        $adress = $settings['adress'];
-        $enable_adress_mob = $settings['enable_adress-mob'];
-        $time_work = $settings['time_work'];
-        $enable_time_work_mob = $settings['enable_time_work-mob'];
         $phone_number = $settings['phone_number'];
-        $sanitize_phone_number = !empty($phone_number) ?  $this->sanitize_phone_number($phone_number) : 0;
+       $sanitize_phone_number = !empty($phone_number) ?  $this->sanitize_phone_number($phone_number) : 0;
         $phone_number_2 = !empty($settings['phone_number_2']) ? $settings['phone_number_2'] : '';
         $sanitize_phone_number_2 = !empty($phone_number_2) ?  $this->sanitize_phone_number($phone_number_2) : 0;
         $use_custom_phone_icon = isset($settings['use_custom_phone_icon']) ? $settings['use_custom_phone_icon'] : '';
@@ -1174,7 +1170,7 @@ class Custom_Header extends Widget_Base {
                                             $default_src = $image_sizes['full'] ?? $logo_url;
                                             ?>
                                             <a href="/" class="header-widget__logo-link">
-                                                <img class="header-widget__logo-img" width="50px" height="50px" src="<?php echo esc_url($default_src); ?>"
+                                                <img class="header-widget__logo-img" width="130" height="100" src="<?php echo esc_url($default_src); ?>"
                                                     alt="<?php echo esc_attr($alt_text ?: 'Логотип'); ?>" <?php foreach ($image_sizes as $size => $src): ?>
                                                     data-<?php echo esc_attr($size); ?>="<?php echo esc_url($src); ?>" <?php endforeach; ?>>
                                   

@@ -214,7 +214,6 @@ class Custom_Header extends Widget_Base {
                 'label' => __('Цвет иконки', 'combined-widgets'),
                 'type' => \Elementor\Controls_Manager::COLOR,
                 'selectors' => [
-                    '{{WRAPPER}} {{CURRENT_ITEM}} a' => 'color: {{VALUE}};',
                     '{{WRAPPER}} {{CURRENT_ITEM}} a svg' => 'fill: {{VALUE}};',
                 ],
             ]
@@ -226,9 +225,8 @@ class Custom_Header extends Widget_Base {
                 'label' => __('Цвет при наведении', 'combined-widgets'),
                 'type' => \Elementor\Controls_Manager::COLOR,
                 'selectors' => [
-                    '{{WRAPPER}} {{CURRENT_ITEM}} a:hover' => 'color: {{VALUE}};',
-                    '{{WRAPPER}} {{CURRENT_ITEM}} a:hover svg' => 'fill: {{VALUE}};',
-                ],
+                    '{{WRAPPER}} {{CURRENT_ITEM}}:hover' => 'background: {{VALUE}};',
+                    ],
             ]
         );
 
@@ -1418,9 +1416,6 @@ class Custom_Header extends Widget_Base {
                                             $data_src = (!empty($settings['enable_popup']) && $settings['enable_popup'] === 'yes' && !empty($popup_id)) ? ' data-mfp-src="#' . esc_attr($popup_id) . '"' : '';
                                             echo '<button type="button" ' . $button_id_attr . ' class="header-widget__callback-button header-widget__button ' . esc_attr($button_class) . '"' . $data_src . '>' . esc_html($button_text) . '</button>';
                                         }
-                                        if (!empty($popup_html)) {
-                                            echo $popup_html;
-                                        }
                                     }
                                     ?>
 
@@ -1594,6 +1589,13 @@ class Custom_Header extends Widget_Base {
 
                 </div>
             </div>
+            
+            <?php 
+            // Вывод попапа в конце, вне основного контейнера
+            if (!empty($popup_html)) {
+                echo $popup_html;
+            }
+            ?>
             <?php
         }
 

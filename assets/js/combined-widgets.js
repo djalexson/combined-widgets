@@ -1,284 +1,242 @@
 ﻿(function($) {
     'use strict';
 
-        // Polylang Language Switcher Dropdown
-        $('.header-widget__lang-current').on('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            var $dropdown = $(this).closest('.header-widget__lang-dropdown');
-            $dropdown.toggleClass('is-open');
+    // Polylang Language Switcher Dropdown
+    $('.header-widget__lang-current').on('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var $dropdown = $(this).closest('.header-widget__lang-dropdown');
+        $dropdown.toggleClass('is-open');
+    });
+
+    // Close language dropdown on outside click
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('.header-widget__lang-dropdown').length) {
+            $('.header-widget__lang-dropdown').removeClass('is-open');
+        }
+    });
+
+    // Close language dropdown on escape
+    $(document).on('keydown', function(e) {
+        if (e.key === 'Escape') {
+            $('.header-widget__lang-dropdown').removeClass('is-open');
+        }
+    });
+})(jQuery);
+
+(function() {
+    'use strict';
+
+    // Настройки по умолчанию
+    var config = {
+        threshold: 0.15,           // Элемент должен быть виден на 15%
+        rootMargin: '0px 0px -100px 0px',  // Срабатывает за 100px до появления в viewport
+        duration: 600,
+        staggerDelay: 100
+    };
+
+    // CSS стили для анимаций
+    var styleId = 'sb-scroll-anim-styles';
+    if (!document.getElementById(styleId)) {
+        var css = `
+            /* Базовые стили */
+            .sb-anim__item {
+                opacity: 0;
+                transition-property: opacity, transform;
+                transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                will-change: opacity, transform;
+            }
+
+            /* Типы анимаций - начальное состояние */
+            .sb-anim--fade .sb-anim__item { transform: translateY(30px); }
+            .sb-anim--fade-up .sb-anim__item { transform: translateY(60px); }
+            .sb-anim--fade-down .sb-anim__item { transform: translateY(-60px); }
+            .sb-anim--fade-left .sb-anim__item { transform: translateX(-60px); }
+            .sb-anim--fade-right .sb-anim__item { transform: translateX(60px); }
+            .sb-anim--zoom-in .sb-anim__item { transform: scale(0.85); }
+            .sb-anim--zoom-out .sb-anim__item { transform: scale(1.15); }
+            .sb-anim--slide-up .sb-anim__item { transform: translateY(100px); }
+            .sb-anim--flip .sb-anim__item { 
+                transform: perspective(1200px) rotateX(-25deg);
+                transform-origin: center bottom;
+            }
+
+            /* Активное состояние */
+            .sb-anim.is-visible .sb-anim__item {
+                opacity: 1;
+                transform: translateY(0) translateX(0) scale(1) rotateX(0);
+            }
+
+            /* Последовательные задержки для элементов */
+            .sb-anim.is-visible .sb-anim__item:nth-child(1) { transition-delay: 0ms; }
+            .sb-anim.is-visible .sb-anim__item:nth-child(2) { transition-delay: 100ms; }
+            .sb-anim.is-visible .sb-anim__item:nth-child(3) { transition-delay: 200ms; }
+            .sb-anim.is-visible .sb-anim__item:nth-child(4) { transition-delay: 300ms; }
+            .sb-anim.is-visible .sb-anim__item:nth-child(5) { transition-delay: 400ms; }
+            .sb-anim.is-visible .sb-anim__item:nth-child(6) { transition-delay: 500ms; }
+            .sb-anim.is-visible .sb-anim__item:nth-child(7) { transition-delay: 600ms; }
+            .sb-anim.is-visible .sb-anim__item:nth-child(8) { transition-delay: 700ms; }
+            .sb-anim.is-visible .sb-anim__item:nth-child(9) { transition-delay: 800ms; }
+            .sb-anim.is-visible .sb-anim__item:nth-child(10) { transition-delay: 900ms; }
+
+            /* Отключение в редакторе Elementor */
+            .elementor-editor-active .sb-anim__item,
+            .elementor-editor-preview .sb-anim__item {
+                opacity: 1 !important;
+                transform: none !important;
+                transition: none !important;
+            }
+
+            /* Уважаем prefers-reduced-motion */
+            @media (prefers-reduced-motion: reduce) {
+                .sb-anim__item {
+                    opacity: 1 !important;
+                    transform: none !important;
+                    transition: none !important;
+                }
+            }
+        `;
+        var style = document.createElement('style');
+        style.id = styleId;
+        style.textContent = css;
+        document.head.appendChild(style);
+    }
+
+    function initScrollAnimations() {
+        // Проверки окружения
+        var isEditor = document.body.classList.contains('elementor-editor-active') ||
+                      document.body.classList.contains('elementor-editor-preview');
+        
+        var prefersReduced = window.matchMedia && 
+                            window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        // Если редактор или пользователь отключил анимации - показываем всё сразу
+        if (isEditor || prefersReduced) {
+            document.querySelectorAll('.sb-anim').forEach(function(el) {
+                el.classList.add('is-visible');
+            });
+            return;
+        }
+
+        // Fallback для старых браузеров
+        if (!('IntersectionObserver' in window)) {
+            document.querySelectorAll('.sb-anim').forEach(function(el) {
+                el.classList.add('is-visible');
+            });
+            return;
+        }
+
+        // Находим все анимируемые блоки
+        var animBlocks = document.querySelectorAll('.sb-anim');
+        if (!animBlocks.length) return;
+
+        // Применяем настройки длительности
+        animBlocks.forEach(function(block) {
+            var duration = block.dataset.duration || config.duration;
+            var items = block.querySelectorAll('.sb-anim__item');
+            
+            items.forEach(function(item) {
+                item.style.transitionDuration = duration + 'ms';
+            });
         });
 
-        // Close language dropdown on outside click
-        $(document).on('click', function(e) {
-            if (!$(e.target).closest('.header-widget__lang-dropdown').length) {
-                $('.header-widget__lang-dropdown').removeClass('is-open');
+        // Создаём Intersection Observer
+        var observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    // Небольшая задержка перед анимацией для более плавного эффекта
+                    setTimeout(function() {
+                        if (entry.target) {
+                            entry.target.classList.add('is-visible');
+                        }
+                    }, 50);
+                    
+                    // Перестаём следить за элементом (запускаем анимацию только один раз)
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            root: null,
+            threshold: config.threshold,
+            rootMargin: config.rootMargin
+        });
+
+        // Наблюдаем за каждым блоком
+        animBlocks.forEach(function(block) {
+            observer.observe(block);
+        });
+    }
+
+    // Запускаем после загрузки DOM
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initScrollAnimations);
+    } else {
+        initScrollAnimations();
+    }
+
+    // Перезапускаем в редакторе Elementor при изменениях
+    if (window.elementorFrontend) {
+        window.elementorFrontend.hooks.addAction('frontend/element_ready/widget', function() {
+            setTimeout(initScrollAnimations, 100);
+        });
+    }
+})();
+
+/* ========== Popup Forms ========== */
+(function($) {
+    'use strict';
+
+    $(document).ready(function() {
+        // Создаём контейнер для попапа если его нет
+        if ($('#sb-popup-overlay').length === 0) {
+            $('body').append('<div id="sb-popup-overlay" class="sb-popup-overlay"><div class="sb-popup-content"><button class="sb-popup-close">&times;</button><div class="sb-popup-body"></div></div></div>');
+        }
+
+        // Обработчик клика на кнопки с попапом
+        $(document).on('click', '[data-popup-form]', function(e) {
+            e.preventDefault();
+            var formId = $(this).data('popup-form');
+            
+            if (formId) {
+                // Загружаем форму
+                var shortcode = '[contact-form-7 id="' + formId + '"]';
+                
+                // Показываем попап
+                var $overlay = $('#sb-popup-overlay');
+                var $body = $overlay.find('.sb-popup-body');
+                
+                $body.html('<div class="sb-popup-loading"><i class="fas fa-spinner fa-spin"></i> Загрузка...</div>');
+                $overlay.fadeIn(200);
+                
+                // AJAX загрузка формы
+                $.ajax({
+                    url: window.wpcf7 ? window.wpcf7.apiSettings.root : '/wp-json/contact-form-7/v1/contact-forms/' + formId,
+                    method: 'GET',
+                    success: function(response) {
+                        $body.html('<div class="wpcf7">' + response.form + '</div>');
+                    },
+                    error: function() {
+                        $body.html('<div class="sb-popup-error">Ошибка загрузки формы</div>');
+                    }
+                });
             }
         });
 
-        // Close language dropdown on escape
+        // Закрытие попапа
+        $(document).on('click', '.sb-popup-close, .sb-popup-overlay', function(e) {
+            if (e.target === this) {
+                $('#sb-popup-overlay').fadeOut(200);
+            }
+        });
+
+        // Закрытие по ESC
         $(document).on('keydown', function(e) {
             if (e.key === 'Escape') {
-                $('.header-widget__lang-dropdown').removeClass('is-open');
+                $('#sb-popup-overlay').fadeOut(200);
             }
         });
-	})(jQuery);
-
-(function(){
-  'use strict';
-
-  // Настройки по умолчанию
-  var defaults = {
-    threshold: 0.15,
-    rootMargin: '0px 0px -50px 0px',
-    duration: 600,
-    delay: 0,
-    easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-    once: true
-  };
-
-  // CSS стили для анимаций (инжектим динамически)
-  var styleId = 'sb-anim-styles';
-  if (!document.getElementById(styleId)) {
-    var css = `
-      /* Базовые стили анимации */
-      .sb-anim__item {
-        opacity: 0;
-        transition-property: opacity, transform;
-        transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        will-change: opacity, transform;
-      }
-      
-      /* Типы анимаций - начальное состояние */
-      .sb-anim__item[data-anim="fade"],
-      .sb-anim__item:not([data-anim]) {
-        transform: translateY(20px);
-      }
-      .sb-anim__item[data-anim="fade-up"] {
-        transform: translateY(40px);
-      }
-      .sb-anim__item[data-anim="fade-down"] {
-        transform: translateY(-40px);
-      }
-      .sb-anim__item[data-anim="fade-left"] {
-        transform: translateX(-40px);
-      }
-      .sb-anim__item[data-anim="fade-right"] {
-        transform: translateX(40px);
-      }
-      .sb-anim__item[data-anim="zoom-in"] {
-        transform: scale(0.8);
-      }
-      .sb-anim__item[data-anim="zoom-out"] {
-        transform: scale(1.2);
-      }
-      .sb-anim__item[data-anim="flip"] {
-        transform: perspective(1000px) rotateX(-30deg);
-      }
-      .sb-anim__item[data-anim="slide-up"] {
-        transform: translateY(100px);
-      }
-      
-      /* Активное состояние */
-      .sb-anim.is-inview .sb-anim__item,
-      .sb-anim__item.is-visible {
-        opacity: 1;
-        transform: translateY(0) translateX(0) scale(1) rotateX(0);
-      }
-      
-      /* Последовательные задержки для дочерних элементов */
-      .sb-anim.is-inview .sb-anim__item:nth-child(1) { transition-delay: 0ms; }
-      .sb-anim.is-inview .sb-anim__item:nth-child(2) { transition-delay: 80ms; }
-      .sb-anim.is-inview .sb-anim__item:nth-child(3) { transition-delay: 160ms; }
-      .sb-anim.is-inview .sb-anim__item:nth-child(4) { transition-delay: 240ms; }
-      .sb-anim.is-inview .sb-anim__item:nth-child(5) { transition-delay: 320ms; }
-      .sb-anim.is-inview .sb-anim__item:nth-child(6) { transition-delay: 400ms; }
-      .sb-anim.is-inview .sb-anim__item:nth-child(7) { transition-delay: 480ms; }
-      .sb-anim.is-inview .sb-anim__item:nth-child(8) { transition-delay: 560ms; }
-      .sb-anim.is-inview .sb-anim__item:nth-child(9) { transition-delay: 640ms; }
-      .sb-anim.is-inview .sb-anim__item:nth-child(10) { transition-delay: 720ms; }
-      
-      /* Отключение анимации в редакторе Elementor */
-      .elementor-editor-active .sb-anim__item,
-      .elementor-editor-preview .sb-anim__item {
-        opacity: 1 !important;
-        transform: none !important;
-        transition: none !important;
-      }
-      
-      /* Уважаем prefers-reduced-motion */
-      @media (prefers-reduced-motion: reduce) {
-        .sb-anim__item {
-          opacity: 1 !important;
-          transform: none !important;
-          transition: none !important;
-        }
-      }
-    `;
-    var style = document.createElement('style');
-    style.id = styleId;
-    style.textContent = css;
-    document.head.appendChild(style);
-  }
-
-  function onReady(fn) {
-    if (document.readyState !== 'loading') fn();
-    else document.addEventListener('DOMContentLoaded', fn);
-  }
-
-  function initScrollAnimations() {
-    // Находим все контейнеры анимации
-    var containers = document.querySelectorAll('.sb-anim');
-    // Также находим отдельные элементы с data-anim
-    var standaloneItems = document.querySelectorAll('[data-anim]:not(.sb-anim__item)');
-    
-    if (!containers.length && !standaloneItems.length) return;
-
-    // Проверка prefers-reduced-motion
-    var prefersReducedMotion = window.matchMedia && 
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    
-    // Проверка на редактор Elementor
-    var isEditor = document.body.classList.contains('elementor-editor-active') ||
-                   document.body.classList.contains('elementor-editor-preview');
-    
-    if (prefersReducedMotion || isEditor) {
-      // Показываем всё сразу без анимации
-      containers.forEach(function(c) { c.classList.add('is-inview'); });
-      standaloneItems.forEach(function(el) { el.classList.add('is-visible'); });
-      return;
-    }
-
-    // Fallback для старых браузеров
-    if (!('IntersectionObserver' in window)) {
-      containers.forEach(function(c) { c.classList.add('is-inview'); });
-      standaloneItems.forEach(function(el) { el.classList.add('is-visible'); });
-      return;
-    }
-
-    // Применяем индивидуальные настройки
-    function applySettings(el) {
-      var duration = el.dataset.duration || defaults.duration;
-      var delay = el.dataset.delay || defaults.delay;
-      
-      el.style.transitionDuration = duration + 'ms';
-      if (delay > 0) {
-        el.style.transitionDelay = delay + 'ms';
-      }
-    }
-
-    // Создаём Observer для контейнеров
-    var containerObserver = new IntersectionObserver(function(entries) {
-      entries.forEach(function(entry) {
-        if (entry.isIntersecting) {
-          var container = entry.target;
-          var once = container.dataset.once !== 'false';
-          
-          // Применяем настройки к дочерним элементам
-          var items = container.querySelectorAll('.sb-anim__item');
-          items.forEach(applySettings);
-          
-          // Активируем анимацию
-          container.classList.add('is-inview');
-          
-          if (once) {
-            containerObserver.unobserve(container);
-          }
-        } else {
-          // Если once=false, убираем класс при выходе из viewport
-          if (entry.target.dataset.once === 'false') {
-            entry.target.classList.remove('is-inview');
-          }
-        }
-      });
-    }, {
-      root: null,
-      threshold: defaults.threshold,
-      rootMargin: defaults.rootMargin
     });
-
-    // Создаём Observer для отдельных элементов
-    var itemObserver = new IntersectionObserver(function(entries) {
-      entries.forEach(function(entry) {
-        if (entry.isIntersecting) {
-          var el = entry.target;
-          var once = el.dataset.once !== 'false';
-          
-          applySettings(el);
-          el.classList.add('is-visible');
-          
-          if (once) {
-            itemObserver.unobserve(el);
-          }
-        } else {
-          if (entry.target.dataset.once === 'false') {
-            entry.target.classList.remove('is-visible');
-          }
-        }
-      });
-    }, {
-      root: null,
-      threshold: defaults.threshold,
-      rootMargin: defaults.rootMargin
-    });
-
-    // Запускаем наблюдение
-    containers.forEach(function(c) {
-      // Устанавливаем кастомный offset если есть
-      var offset = c.dataset.offset;
-      if (offset) {
-        var customObserver = new IntersectionObserver(function(entries) {
-          entries.forEach(function(entry) {
-            if (entry.isIntersecting) {
-              entry.target.classList.add('is-inview');
-              if (entry.target.dataset.once !== 'false') {
-                customObserver.unobserve(entry.target);
-              }
-            } else if (entry.target.dataset.once === 'false') {
-              entry.target.classList.remove('is-inview');
-            }
-          });
-        }, {
-          root: null,
-          threshold: defaults.threshold,
-          rootMargin: '0px 0px -' + offset + 'px 0px'
-        });
-        customObserver.observe(c);
-      } else {
-        containerObserver.observe(c);
-      }
-    });
-
-    standaloneItems.forEach(function(el) {
-      itemObserver.observe(el);
-    });
-
-    // Пересоздаём observer при изменении размера окна (для пересчёта)
-    var resizeTimer;
-    window.addEventListener('resize', function() {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(function() {
-        // Re-check visibility after resize
-      }, 250);
-    });
-  }
-
-  onReady(initScrollAnimations);
-
-  // Экспортируем функцию для повторной инициализации (AJAX, Elementor)
-  window.sbAnimInit = initScrollAnimations;
-
-  // Поддержка Elementor frontend
-  if (typeof jQuery !== 'undefined') {
-    jQuery(window).on('elementor/frontend/init', function() {
-      if (typeof elementorFrontend !== 'undefined') {
-        elementorFrontend.hooks.addAction('frontend/element_ready/global', function() {
-          setTimeout(initScrollAnimations, 100);
-        });
-      }
-    });
-  }
-})();
+})(jQuery);
 
 /* ========== custom-header.js ========== */
 // Ripple effect for buttons with animation="ripple"

@@ -598,11 +598,15 @@ trait Common_Controls {
     }
 
     /**
-     * Get animation class
+     * Get animation class with type
      */
     protected function get_anim_class() {
         $s = $this->get_settings_for_display();
-        return ( ! empty( $s['cw_animation_enable'] ) && $s['cw_animation_enable'] === 'yes' ) ? ' sb-anim' : '';
+        if ( empty( $s['cw_animation_enable'] ) || $s['cw_animation_enable'] !== 'yes' ) {
+            return '';
+        }
+        $type = ! empty( $s['cw_animation_type'] ) ? $s['cw_animation_type'] : 'fade-up';
+        return ' sb-anim sb-anim--' . esc_attr( $type );
     }
 
     /**

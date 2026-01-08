@@ -1,92 +1,106 @@
-/**
- * CW Magnific Popup Init
- */
-(function($) {
-    'use strict';
+jQuery(function($) {
+	// Теперь $ будет работать как jQuery
+	class ContactFormPopup {
+			static instance;
 
-    $(document).ready(function() {
-        // Initialize Magnific Popup for popup links
-        if (typeof $.fn.magnificPopup !== 'undefined') {
-            
-            // Header widget callback buttons with popup
-            $('.header-widget__callback-button[data-effect="mfp-zoom-in"]').magnificPopup({
-                type: 'inline',
-                midClick: true,
-                mainClass: 'mfp-zoom-in',
-                removalDelay: 300,
-                callbacks: {
-                    open: function() {
-                        $('body').addClass('cw-popup-open');
-                    },
-                    close: function() {
-                        $('body').removeClass('cw-popup-open');
-                    }
-                }
-            });
+			static getInstance() {
+					if (!ContactFormPopup.instance) {
+							ContactFormPopup.instance = new ContactFormPopup();
+					}
+					return ContactFormPopup.instance;
+			}
 
-            // Buttons with data-mfp-src attribute
-            $('button[data-mfp-src], a[data-mfp-src]').magnificPopup({
-                type: 'inline',
-                midClick: true,
-                mainClass: 'mfp-zoom-in',
-                removalDelay: 300,
-                callbacks: {
-                    beforeOpen: function() {
-                        var src = $(this.st.el).attr('data-mfp-src');
-                        if (src) {
-                            this.st.items = [{
-                                src: src,
-                                type: 'inline'
-                            }];
-                        }
-                    },
-                    open: function() {
-                        $('body').addClass('cw-popup-open');
-                    },
-                    close: function() {
-                        $('body').removeClass('cw-popup-open');
-                    }
-                }
-            });
+			constructor() {
+					$(document).ready(() => {
+							this.init();
+					});
+					$(window).on('elementor/frontend/init', () => {
+							this.init();
+					});
+			}
 
-            // Generic popup links
-            $('.cw-popup-link').magnificPopup({
-                type: 'inline',
-                midClick: true,
-                mainClass: 'cw-mfp-zoom',
-                removalDelay: 300,
-                callbacks: {
-                    open: function() {
-                        $('body').addClass('cw-popup-open');
-                    },
-                    close: function() {
-                        $('body').removeClass('cw-popup-open');
-                    }
-                }
-            });
+			init() {
 
-            // Image popup
-            $('.cw-popup-image').magnificPopup({
-                type: 'image',
-                closeOnContentClick: true,
-                mainClass: 'cw-mfp-zoom',
-                image: {
-                    verticalFit: true
-                }
-            });
 
-            // Gallery
-            $('.cw-gallery').magnificPopup({
-                delegate: 'a',
-                type: 'image',
-                gallery: {
-                    enabled: true,
-                    navigateByImgClick: true
-                },
-                mainClass: 'cw-mfp-zoom'
-            });
-        } else {
-            console.error('Magnific Popup not loaded. Please ensure the library is included.');
-        }
-    });
-})(jQuery);
+				const initScope = ($scope) => {
+					const $buttons = $scope.find('.header-widget__callback-button');
+				console.log('ContactFormPopup: инициализация попапов');			
+					if (!$buttons.length) return;
+
+					// Проверяем наличие Magnific Popup
+					const hasMfp = !!$.fn.magnificPopup;
+	
+					$buttons.each(function() {
+						const $btn = $(this);
+						const effect = $btn.attr('data-effect') || 'mfp-fade';
+						const href = $btn.attr('href');
+						const dataSrc = $btn.attr('data-mfp-src');
+						
+	
+						if (hasMfp) {
+							// Анкорная ссылка на inline-попап
+							if (href && href.startsWith('#')) {
+								const targetId = href;
+								const $target = $(targetId);
+								
+								$btn.magnificPopup({
+									type: 'inline',
+									removalDelay: 500,
+									callbacks: {
+										beforeOpen: function() { 
+											this.st.mainClass = effect;
+															},
+										close: function() { 
+											$(document).trigger('customPopupClosed');
+											console.log('ContactFormPopup: закрытие попапа');
+										}
+									},
+									midClick: true
+								});
+							} else if (dataSrc) {
+								// Кнопка с data-mfp-src
+								
+								$btn.on('click', function(e){
+									e.preventDefault();
+								
+									$.magnificPopup.open({
+										items: { src: dataSrc },
+										type: 'inline',
+										removalDelay: 500,
+										mainClass: effect || 'mfp-fade',
+										callbacks: {
+											close: function() { 
+												$(document).trigger('customPopupClosed');
+											}
+										}
+									});
+								});
+							}
+						} else {
+					
+							if (href && href.startsWith('#')) {
+								$btn.on('click', function(e){
+									e.preventDefault();
+									const $target = $(href);
+									if ($target.length) {
+										$target.show();
+									}
+								});
+							}
+						}
+					});
+				};
+
+				// Инициализация для Elementor
+				if (window.elementorFrontend && elementorFrontend.hooks) {
+					elementorFrontend.hooks.addAction('frontend/element_ready/AS_custom_header_widget.default', initScope);
+				}
+				
+				// Инициализация для обычной страницы
+				initScope($(document));
+			}
+	}
+
+	// Инициализация класса
+	ContactFormPopup.getInstance();
+});

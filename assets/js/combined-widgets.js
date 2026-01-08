@@ -1,28 +1,29 @@
-﻿/* Combined Widgets - All JavaScript Files */
-/* Combines: sbalance-anim, custom-header, custom-popup, menu-checkbox-ajax */
+﻿(function($) {
+    'use strict';
 
-/* ========== sbalance-anim.js ========== */
-/**
- * Scroll Animation System
- * 
- * Использование:
- * 1. Добавьте класс .sb-anim к контейнеру
- * 2. Добавьте класс .sb-anim__item к элементам внутри
- * 3. Опционально: добавьте data-anim="тип" для разных анимаций:
- *    - fade (по умолчанию) — плавное появление снизу
- *    - fade-up — появление снизу
- *    - fade-down — появление сверху
- *    - fade-left — появление слева
- *    - fade-right — появление справа
- *    - zoom-in — увеличение
- *    - zoom-out — уменьшение
- *    - flip — переворот
- *    - slide-up — слайд снизу
- * 4. Опционально: data-delay="100" — задержка в мс
- * 5. Опционально: data-duration="600" — длительность в мс
- * 6. Опционально: data-offset="100" — смещение триггера в px
- * 7. Опционально: data-once="false" — анимация каждый раз при скролле
- */
+        // Polylang Language Switcher Dropdown
+        $('.header-widget__lang-current').on('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var $dropdown = $(this).closest('.header-widget__lang-dropdown');
+            $dropdown.toggleClass('is-open');
+        });
+
+        // Close language dropdown on outside click
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('.header-widget__lang-dropdown').length) {
+                $('.header-widget__lang-dropdown').removeClass('is-open');
+            }
+        });
+
+        // Close language dropdown on escape
+        $(document).on('keydown', function(e) {
+            if (e.key === 'Escape') {
+                $('.header-widget__lang-dropdown').removeClass('is-open');
+            }
+        });
+	})(jQuery);
+
 (function(){
   'use strict';
 
@@ -524,205 +525,3 @@ if (menuContainer) {
 		}
 	});
 }
-
-/* ========== custom-popup.js ========== */
-jQuery(function($) {
-	// РўРµРїРµСЂСЊ $ Р±СѓРґРµС‚ СЂР°Р±РѕС‚Р°С‚СЊ РєР°Рє jQuery
-	class ContactFormPopup {
-			static instance;
-
-			static getInstance() {
-					if (!ContactFormPopup.instance) {
-							ContactFormPopup.instance = new ContactFormPopup();
-					}
-					return ContactFormPopup.instance;
-			}
-
-			constructor() {
-					$(document).ready(() => {
-							this.init();
-					});
-					$(window).on('elementor/frontend/init', () => {
-							this.init();
-					});
-			}
-
-			init() {
-
-
-				const initScope = ($scope) => {
-					const $buttons = $scope.find('.header-widget__callback-button');
-					
-					if (!$buttons.length) return;
-
-					// РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ Magnific Popup
-					const hasMfp = !!$.fn.magnificPopup;
-	
-					$buttons.each(function() {
-						const $btn = $(this);
-						const effect = $btn.attr('data-effect') || 'mfp-fade';
-						const href = $btn.attr('href');
-						const dataSrc = $btn.attr('data-mfp-src');
-						
-	
-						if (hasMfp) {
-							// РђРЅРєРѕСЂРЅР°СЏ СЃСЃС‹Р»РєР° РЅР° inline-РїРѕРїР°Рї
-							if (href && href.startsWith('#')) {
-								const targetId = href;
-								const $target = $(targetId);
-								
-								$btn.magnificPopup({
-									type: 'inline',
-									removalDelay: 500,
-									callbacks: {
-										beforeOpen: function() { 
-											this.st.mainClass = effect;
-															},
-										close: function() { 
-											$(document).trigger('customPopupClosed');
-											console.log('ContactFormPopup: Р·Р°РєСЂС‹С‚РёРµ РїРѕРїР°РїР°');
-										}
-									},
-									midClick: true
-								});
-							} else if (dataSrc) {
-								// РљРЅРѕРїРєР° СЃ data-mfp-src
-								
-								$btn.on('click', function(e){
-									e.preventDefault();
-								
-									$.magnificPopup.open({
-										items: { src: dataSrc },
-										type: 'inline',
-										removalDelay: 500,
-										mainClass: effect || 'mfp-fade',
-										callbacks: {
-											close: function() { 
-												$(document).trigger('customPopupClosed');
-											}
-										}
-									});
-								});
-							}
-						} else {
-					
-							if (href && href.startsWith('#')) {
-								$btn.on('click', function(e){
-									e.preventDefault();
-									const $target = $(href);
-									if ($target.length) {
-										$target.show();
-									}
-								});
-							}
-						}
-					});
-				};
-
-				// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РґР»СЏ Elementor
-				if (window.elementorFrontend && elementorFrontend.hooks) {
-					elementorFrontend.hooks.addAction('frontend/element_ready/AS_custom_header_widget.default', initScope);
-				}
-				
-				// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РґР»СЏ РѕР±С‹С‡РЅРѕР№ СЃС‚СЂР°РЅРёС†С‹
-				initScope($(document));
-			}
-	}
-
-	// РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РєР»Р°СЃСЃР°
-	ContactFormPopup.getInstance();
-});
-
-/* ========== menu-checkbox-ajax.js ========== */
-jQuery(document).ready(function ($) {
-	var $checkboxes = $('input[type="checkbox"][name^="checkbox_value_"]');
-	var $imageContainers = $('.select-image-button').map(function () {
-		var $button = $(this);
-		return {
-			id: $button.data('item-id'),
-			container: $('#image_upload_container_' + $button.data('item-id'))
-		};
-	}).get();
-
-	// Manage image container visibility
-	function toggleImageContainer(menuItemId, isChecked) {
-		$imageContainers.forEach(function (item) {
-			if (item.id != menuItemId) {
-				if (isChecked) {
-					item.container.slideDown(200);
-				} else {
-					item.container.slideUp(200); 
-				}
-			}
-		});
-	}
-
-	// Checkbox change handler
-	$checkboxes.on('change', function () {
-		var $checkbox = $(this);
-		var menuItemId = $checkbox.attr('name').replace('checkbox_value_', '');
-		var isChecked = $checkbox.is(':checked');
-
-		toggleImageContainer(menuItemId, isChecked);
-
-		// AJAX to save checkbox state
-		$.ajax({
-			url: checkboxAjax.ajaxurl,
-			type: 'POST',
-			data: {
-				action: 'update_checkbox_state',
-				menu_item_id: menuItemId,
-				checkbox_value: isChecked ? 1 : 0,
-				nonce: checkboxAjax.nonce
-			},
-			success: function (response) {
-				if (response.success) {
-					console.log('Checkbox state updated.');
-				} else {
-					console.error('Error updating checkbox state.');
-				}
-			},
-			error: function () {
-				console.error('AJAX request error.');
-			}
-		});
-	});
-
-	// Media library integration
-	$('.select-image-button').on('click', function (e) {
-		e.preventDefault();
-		var menuItemId = $(this).data('item-id');
-
-		var imageFrame = wp.media({
-			title: 'Select Image',
-			button: { text: 'Select' },
-			multiple: false
-		});
-
-		imageFrame.on('select', function () {
-			var attachment = imageFrame.state().get('selection').first().toJSON();
-			var $container = $('#image_upload_container_' + menuItemId + ' .image-preview');
-
-			$container.hide();
-			$container.html(`
-				<img src="${attachment.url}" style="max-width: 80px; margin-top: 10px;" />
-				<button type="button" class="button remove-image" data-item-id="${menuItemId}">Remove Image</button>
-			`);
-			$container.fadeIn(300);
-
-			$('#image_id_' + menuItemId).val(attachment.id);
-		});
-
-		imageFrame.open();
-	});
-
-	// Remove image (event delegation)
-	$(document).on('click', '.remove-image', function () {
-		var menuItemId = $(this).data('item-id');
-		$('#image_id_' + menuItemId).val('');
-		$('#image_upload_container_' + menuItemId + ' .image-preview')
-			.fadeOut(300, function () {
-				$(this).html(''); 
-			});
-	});
-});

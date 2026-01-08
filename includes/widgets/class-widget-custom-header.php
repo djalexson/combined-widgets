@@ -7,6 +7,9 @@ use Elementor\Widget_Base;
 use Elementor\Controls_Manager;
 
 class Custom_Header extends Widget_Base {
+    
+    private static $controls_registered = false;
+    
     public function get_name() {
         return 'as_custom_header_widget';
     }
@@ -22,6 +25,11 @@ class Custom_Header extends Widget_Base {
 
     public function get_categories() {
         return [ 'as-widgets' ];
+    }
+    
+    // Отключаем автоматическую регистрацию при инициализации редактора
+    public function is_reload_preview_required() {
+        return false;
     }
 
     protected function register_controls()
@@ -54,9 +62,9 @@ class Custom_Header extends Widget_Base {
         $this->add_control(
             'logo_text',
             [
-                'label' => __('Описание Логотипа', 'combined-widgets'),
+                'label' => __('Любой текст', 'combined-widgets'),
                 'type' => \Elementor\Controls_Manager::TEXTAREA,
-                'default' => __('Аренда илососа с размывкой по выгодной цене в Москве', 'combined-widgets'),
+                'default' => __('Введите текст ,который будет отображаться сверху ,если нужно', 'combined-widgets'),
                 'placeholder' => __('Введите текст', 'combined-widgets'),
             ]
         );
@@ -75,49 +83,8 @@ class Custom_Header extends Widget_Base {
             ]
         );
 
-        $this->add_control(
-            'adress',
-            [
-                'label' => __('Адрес', 'combined-widgets'),
-                'type' => \Elementor\Controls_Manager::TEXT,
-                'default' => __('г. Москва, улица Марксистская улица, 20 стр.8', 'combined-widgets'),
-            ]
-        );
 
-        $this->add_control(
-            'enable_adress-mob',
-            [
-                'label' => __('Показывать адрес в бургере??', 'combined-widgets'),
-                'type' => \Elementor\Controls_Manager::SWITCHER,
-                'label_on' => __('Yes', 'combined-widgets'),
-                'label_off' => __('No', 'combined-widgets'),
-                'return_value' => 'yes',
-                'default' => 'yes',
-                'description' => __('Включить и отключить адрес в бургере', 'combined-widgets'),
-            ]
-        );
-        $this->add_control(
-            'time_work',
-            [
-                'label' => __('Режим работы', 'combined-widgets'),
-                'type' => \Elementor\Controls_Manager::TEXT,
-                'default' => __('Режим работы: Пн-Пт 9:00-18:00', 'combined-widgets'),
-            ]
-        );
-        $this->add_control(
-            'enable_time_work-mob',
-            [
-                'label' => __('Показывать режим работы в бургере?', 'combined-widgets'),
-                'type' => \Elementor\Controls_Manager::SWITCHER,
-                'label_on' => __('Yes', 'combined-widgets'),
-                'label_off' => __('No', 'combined-widgets'),
-                'return_value' => 'yes',
-                'default' => 'yes',
-                'description' => __('Включить и отключить режим работы в бургере', 'combined-widgets'),
-            ]
-        );
-
-        $this->add_control(
+       $this->add_control(
             'email_adress',
             [
                 'label' => __('Email адрес', 'combined-widgets'),
@@ -229,25 +196,6 @@ class Custom_Header extends Widget_Base {
                     'value' => 'fab fa-telegram-plane',
                     'library' => 'fa-brands',
                 ],
-                'recommended' => [
-                    'fa-brands' => [
-                        'telegram-plane',
-                        'telegram',
-                        'whatsapp',
-                        'vk',
-                        'facebook-f',
-                        'instagram',
-                        'twitter',
-                        'youtube',
-                        'viber',
-                        'odnoklassniki',
-                    ],
-                    'fa-solid' => [
-                        'phone',
-                        'envelope',
-                        'globe',
-                    ],
-                ],
             ]
         );
 
@@ -257,11 +205,6 @@ class Custom_Header extends Widget_Base {
                 'label' => __('Ссылка', 'combined-widgets'),
                 'type' => \Elementor\Controls_Manager::URL,
                 'placeholder' => __('https://example.com', 'combined-widgets'),
-                'default' => [
-                    'url' => '',
-                    'is_external' => true,
-                    'nofollow' => true,
-                ],
             ]
         );
 
@@ -270,7 +213,6 @@ class Custom_Header extends Widget_Base {
             [
                 'label' => __('Цвет иконки', 'combined-widgets'),
                 'type' => \Elementor\Controls_Manager::COLOR,
-                'default' => '#ffffff',
                 'selectors' => [
                     '{{WRAPPER}} {{CURRENT_ITEM}} a' => 'color: {{VALUE}};',
                     '{{WRAPPER}} {{CURRENT_ITEM}} a svg' => 'fill: {{VALUE}};',
@@ -283,37 +225,9 @@ class Custom_Header extends Widget_Base {
             [
                 'label' => __('Цвет при наведении', 'combined-widgets'),
                 'type' => \Elementor\Controls_Manager::COLOR,
-                'default' => '#cccccc',
                 'selectors' => [
                     '{{WRAPPER}} {{CURRENT_ITEM}} a:hover' => 'color: {{VALUE}};',
                     '{{WRAPPER}} {{CURRENT_ITEM}} a:hover svg' => 'fill: {{VALUE}};',
-                ],
-            ]
-        );
-
-        $repeater_social->add_responsive_control(
-            'social_icon_size',
-            [
-                'label' => __('Размер иконки', 'combined-widgets'),
-                'type' => \Elementor\Controls_Manager::SLIDER,
-                'size_units' => ['px', 'em', 'rem'],
-                'range' => [
-                    'px' => [
-                        'min' => 10,
-                        'max' => 100,
-                    ],
-                    'em' => [
-                        'min' => 0.5,
-                        'max' => 5,
-                    ],
-                ],
-                'default' => [
-                    'unit' => 'px',
-                    'size' => 20,
-                ],
-                'selectors' => [
-                    '{{WRAPPER}} {{CURRENT_ITEM}} a i' => 'font-size: {{SIZE}}{{UNIT}};',
-                    '{{WRAPPER}} {{CURRENT_ITEM}} a svg' => 'width: {{SIZE}}{{UNIT}}; height: {{SIZE}}{{UNIT}};',
                 ],
             ]
         );
@@ -324,59 +238,7 @@ class Custom_Header extends Widget_Base {
                 'label' => __('Социальные иконки', 'combined-widgets'),
                 'type' => \Elementor\Controls_Manager::REPEATER,
                 'fields' => $repeater_social->get_controls(),
-                'default' => [
-                    [
-                        'social_icon' => [
-                            'value' => 'fab fa-telegram-plane',
-                            'library' => 'fa-brands',
-                        ],
-                        'social_link' => [
-                            'url' => 'https://t.me/serega194',
-                            'is_external' => true,
-                            'nofollow' => true,
-                        ],
-                        'social_icon_color' => '#ffffff',
-                        'social_icon_hover_color' => '#cccccc',
-                        'social_icon_size' => [
-                            'unit' => 'px',
-                            'size' => 20,
-                        ],
-                    ],
-                    [
-                        'social_icon' => [
-                            'value' => 'fab fa-vk',
-                            'library' => 'fa-brands',
-                        ],
-                        'social_link' => [
-                            'url' => 'https://vk.com/id701241652',
-                            'is_external' => true,
-                            'nofollow' => true,
-                        ],
-                        'social_icon_color' => '#ffffff',
-                        'social_icon_hover_color' => '#cccccc',
-                        'social_icon_size' => [
-                            'unit' => 'px',
-                            'size' => 20,
-                        ],
-                    ],
-                    [
-                        'social_icon' => [
-                            'value' => 'fab fa-whatsapp',
-                            'library' => 'fa-brands',
-                        ],
-                        'social_link' => [
-                            'url' => 'whatsapp://send/?phone=79777134879',
-                            'is_external' => true,
-                            'nofollow' => true,
-                        ],
-                        'social_icon_color' => '#ffffff',
-                        'social_icon_hover_color' => '#cccccc',
-                        'social_icon_size' => [
-                            'unit' => 'px',
-                            'size' => 20,
-                        ],
-                    ],
-                ],
+                'default' => [],
                 'title_field' => '<i class="{{{ social_icon.value }}}"></i>',
             ]
         );
@@ -858,29 +720,120 @@ class Custom_Header extends Widget_Base {
         $this->add_responsive_control(
             'logo_width',
             [
-                'label' => __('Ширина блока логотипа', 'combined-widgets'),
+                'label' => __('Ширина логотипа', 'combined-widgets'),
                 'type' => \Elementor\Controls_Manager::SLIDER,
-                'size_units' => ['px','rem','%'],
+                'size_units' => ['px','rem','%','vw'],
                 'range' => [
-                    'px' => ['min' => 40, 'max' => 600],
+                    'px' => ['min' => 20, 'max' => 800, 'step' => 1],
+                    'rem' => ['min' => 1, 'max' => 50, 'step' => 0.1],
+                    '%' => ['min' => 5, 'max' => 100, 'step' => 1],
+                    'vw' => ['min' => 1, 'max' => 50, 'step' => 0.1],
+                ],
+                'default' => [
+                    'unit' => 'px',
+                    'size' => '',
                 ],
                 'selectors' => [
-                    '{{WRAPPER}} .header-widget__logo-link' => 'width: {{SIZE}}{{UNIT}};',
+                    '{{WRAPPER}} .header-widget__logo-img' => 'width: {{SIZE}}{{UNIT}};',
+                    '{{WRAPPER}} .header-widget__logo-link' => 'width: auto;',
                 ],
             ]
         );
 
         $this->add_responsive_control(
-            'logo_img_height',
+            'logo_height',
+            [
+                'label' => __('Высота логотипа', 'combined-widgets'),
+                'type' => \Elementor\Controls_Manager::SLIDER,
+                'size_units' => ['px','rem','vh'],
+                'range' => [
+                    'px' => ['min' => 20, 'max' => 400, 'step' => 1],
+                    'rem' => ['min' => 1, 'max' => 25, 'step' => 0.1],
+                    'vh' => ['min' => 1, 'max' => 30, 'step' => 0.1],
+                ],
+                'default' => [
+                    'unit' => 'px',
+                    'size' => '',
+                ],
+                'selectors' => [
+                    '{{WRAPPER}} .header-widget__logo-img' => 'height: {{SIZE}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'logo_max_width',
+            [
+                'label' => __('Макс. ширина логотипа', 'combined-widgets'),
+                'type' => \Elementor\Controls_Manager::SLIDER,
+                'size_units' => ['px','rem','%'],
+                'range' => [
+                    'px' => ['min' => 50, 'max' => 1000, 'step' => 5],
+                    'rem' => ['min' => 3, 'max' => 60, 'step' => 0.5],
+                    '%' => ['min' => 10, 'max' => 100, 'step' => 1],
+                ],
+                'selectors' => [
+                    '{{WRAPPER}} .header-widget__logo-img' => 'max-width: {{SIZE}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'logo_max_height',
             [
                 'label' => __('Макс. высота логотипа', 'combined-widgets'),
                 'type' => \Elementor\Controls_Manager::SLIDER,
                 'size_units' => ['px','rem'],
                 'range' => [
-                    'px' => ['min' => 20, 'max' => 200],
+                    'px' => ['min' => 20, 'max' => 500, 'step' => 5],
+                    'rem' => ['min' => 1, 'max' => 30, 'step' => 0.5],
                 ],
                 'selectors' => [
                     '{{WRAPPER}} .header-widget__logo-img' => 'max-height: {{SIZE}}{{UNIT}};',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'logo_object_fit',
+            [
+                'label' => __('Подгонка изображения', 'combined-widgets'),
+                'type' => \Elementor\Controls_Manager::SELECT,
+                'default' => 'contain',
+                'options' => [
+                    'contain' => __('Вместить', 'combined-widgets'),
+                    'cover' => __('Заполнить', 'combined-widgets'),
+                    'fill' => __('Растянуть', 'combined-widgets'),
+                    'scale-down' => __('Уменьшить', 'combined-widgets'),
+                    'none' => __('Без изменений', 'combined-widgets'),
+                ],
+                'selectors' => [
+                    '{{WRAPPER}} .header-widget__logo-img' => 'object-fit: {{VALUE}};',
+                ],
+            ]
+        );
+
+        $this->add_responsive_control(
+            'logo_margin',
+            [
+                'label' => __('Отступы логотипа', 'combined-widgets'),
+                'type' => \Elementor\Controls_Manager::DIMENSIONS,
+                'size_units' => ['px', 'em', 'rem', '%'],
+                'selectors' => [
+                    '{{WRAPPER}} .header-widget__logo' => 'margin: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
+                ],
+                'separator' => 'before',
+            ]
+        );
+
+        $this->add_responsive_control(
+            'logo_padding',
+            [
+                'label' => __('Внутренние отступы логотипа', 'combined-widgets'),
+                'type' => \Elementor\Controls_Manager::DIMENSIONS,
+                'size_units' => ['px', 'em', 'rem', '%'],
+                'selectors' => [
+                    '{{WRAPPER}} .header-widget__logo' => 'padding: {{TOP}}{{UNIT}} {{RIGHT}}{{UNIT}} {{BOTTOM}}{{UNIT}} {{LEFT}}{{UNIT}};',
                 ],
             ]
         );
@@ -1048,7 +1001,8 @@ class Custom_Header extends Widget_Base {
             return $cached_forms;
         }
         
-        $forms = [];
+        $forms = ['0' => __('-- Select Form --', 'combined-widgets')];
+        
         if (class_exists('WPCF7')) {
             // Используем transient для кеширования на 1 час
             $cache_key = 'cw_contact_forms_list';
@@ -1061,9 +1015,10 @@ class Custom_Header extends Widget_Base {
             
             $contact_forms = get_posts([
                 'post_type' => 'wpcf7_contact_form',
-                'numberposts' => -1,
+                'numberposts' => 50, // Ограничиваем выборку
                 'orderby' => 'title',
-                'order' => 'ASC'
+                'order' => 'ASC',
+                'post_status' => 'publish'
             ]);
             
             foreach ($contact_forms as $form) {
@@ -1120,7 +1075,6 @@ class Custom_Header extends Widget_Base {
         $button_id = !empty($settings['button_id']) ? $settings['button_id'] : '';
         $button_class = !empty($settings['button_class']) ? $settings['button_class'] : '';
         $popup_id = 'opal-contactform-popup-' . $this->get_id();
-        $popup_ilnk = '';
         $popup_html = '';
         $popup_data = '';
 
@@ -1133,19 +1087,24 @@ class Custom_Header extends Widget_Base {
         $enable_polylang_mob = isset($settings['enable_polylang_mob']) ? $settings['enable_polylang_mob'] : 'yes';
        
 				if (isset($settings['enable_popup']) && $settings['enable_popup'] === 'yes') {
-            $popup_ilnk = $popup_id;
             $popup_data = 'data-effect="mfp-zoom-in"';
             $popup_html = '<div class="mfp-hide contactform-content my-popup" id="' . esc_attr($popup_id) . '">';
             $popup_html .= '<div class="heading-form">';
             if (!empty($settings['contact_form'])) {
                 $form_id = intval($settings['contact_form']);
-                $form_post = get_post($form_id);
-                if ($form_post) {
-                    $form_title = esc_html($form_post->post_title);
-                    $popup_html .= '<div class="form-title">' . $form_title . '</div>';
-                } else {
-                    $popup_html .= '<div class="form-title">' . __('Untitled Form', 'combined-widgets') . '</div>'; // Заглушка для отсутствующего поста
+                // Кешируем заголовок формы
+                $cache_key = 'cw_form_title_' . $form_id;
+                $form_title = get_transient($cache_key);
+                if ($form_title === false) {
+                    $form_post = get_post($form_id);
+                    if ($form_post) {
+                        $form_title = esc_html($form_post->post_title);
+                        set_transient($cache_key, $form_title, DAY_IN_SECONDS);
+                    } else {
+                        $form_title = __('Untitled Form', 'combined-widgets');
+                    }
                 }
+                $popup_html .= '<div class="form-title">' . $form_title . '</div>';
             }
             $popup_html .= !empty($popup_text) ? '<div class="form-desc">' . $popup_text . '</div>' : "";
             $popup_html .= '</div>';
@@ -1229,7 +1188,15 @@ class Custom_Header extends Widget_Base {
                                 <nav class="header-widget__menu">
                                     <ul class="rest-list menu__list">
                                         <?php
-                                        $menu_items = wp_get_nav_menu_items($menu);
+                                        // Кешируем меню
+                                        $cache_key = 'cw_menu_items_' . $menu;
+                                        $menu_items = get_transient($cache_key);
+                                        if ($menu_items === false) {
+                                            $menu_items = wp_get_nav_menu_items($menu);
+                                            if ($menu_items) {
+                                                set_transient($cache_key, $menu_items, HOUR_IN_SECONDS);
+                                            }
+                                        }
 
                                         foreach ($menu_items as $item):
                                             $checkbox_value = get_post_meta($item->ID, '_checkbox_value', true);
@@ -1443,17 +1410,17 @@ class Custom_Header extends Widget_Base {
                                     <?php endif; ?>
                                     <?php
                                     if (!empty($button_text)) {
-                                        $button_id = !empty($button_id) ? 'id="' . esc_attr($button_id) . '"' : "";
+                                        $button_id_attr = !empty($button_id) ? 'id="' . esc_attr($button_id) . '"' : "";
                                         if ($button_type === 'link') {
                                             if (!empty($settings['enable_popup']) && $settings['enable_popup'] === 'yes' && !empty($popup_id)) {
-                                                echo '<a href="#' . esc_attr($popup_id) . '" ' . $button_id . ' animation="ripple" class="header-widget__callback-button header-widget__button ' . esc_attr($button_class) . '" ' . $popup_data . '>' . esc_html($button_text) . '</a>';
+                                                echo '<a href="#' . esc_attr($popup_id) . '" ' . $button_id_attr . ' animation="ripple" class="header-widget__callback-button header-widget__button ' . esc_attr($button_class) . '" ' . $popup_data . '>' . esc_html($button_text) . '</a>';
                                             } else {
                                                 $url = !empty($button_url) ? esc_url($button_url) : '#';
-                                                echo '<a href="' . $url . '" ' . $button_id . ' animation="ripple" class="header-widget__callback-button header-widget__button ' . esc_attr($button_class) . '">' . esc_html($button_text) . '</a>';
+                                                echo '<a href="' . $url . '" ' . $button_id_attr . ' animation="ripple" class="header-widget__callback-button header-widget__button ' . esc_attr($button_class) . '">' . esc_html($button_text) . '</a>';
                                             }
                                         } elseif ($button_type === 'submit') {
                                             $data_src = (!empty($settings['enable_popup']) && $settings['enable_popup'] === 'yes' && !empty($popup_id)) ? ' data-mfp-src="#' . esc_attr($popup_id) . '"' : '';
-                                            echo '<button type="button" ' . $button_id . ' class="header-widget__callback-button header-widget__button ' . esc_attr($button_class) . '"' . $data_src . '>' . esc_html($button_text) . '</button>';
+                                            echo '<button type="button" ' . $button_id_attr . ' class="header-widget__callback-button header-widget__button ' . esc_attr($button_class) . '"' . $data_src . '>' . esc_html($button_text) . '</button>';
                                         }
                                         if (!empty($popup_html)) {
                                             echo $popup_html;
@@ -1528,17 +1495,17 @@ class Custom_Header extends Widget_Base {
 
                     <?PHP
                     if (!empty($button_text) && $enable_button_text_mob === "yes") {
-                        $button_id = !empty($button_id) ? 'id="' . esc_attr($button_id) . '"' : "";
+                        $button_id_attr = !empty($button_id) ? 'id="' . esc_attr($button_id) . '"' : "";
                         if ($button_type === 'link') {
                             if (!empty($settings['enable_popup']) && $settings['enable_popup'] === 'yes' && !empty($popup_id)) {
-                                echo '<a href="#' . esc_attr($popup_id) . '" ' . $button_id . ' class="header-widget__callback-button header-widget__button header-widget__callback-button--mob ' . esc_attr($button_class) . '" ' . $popup_data . '>' . esc_html($button_text) . '</a>';
+                                echo '<a href="#' . esc_attr($popup_id) . '" ' . $button_id_attr . ' class="header-widget__callback-button header-widget__button header-widget__callback-button--mob ' . esc_attr($button_class) . '" ' . $popup_data . '>' . esc_html($button_text) . '</a>';
                             } else {
                                 $url = !empty($button_url) ? esc_url($button_url) : '#';
-                                echo '<a href="' . $url . '" ' . $button_id . ' class="header-widget__callback-button header-widget__button header-widget__callback-button--mob ' . esc_attr($button_class) . '">' . esc_html($button_text) . '</a>';
+                                echo '<a href="' . $url . '" ' . $button_id_attr . ' class="header-widget__callback-button header-widget__button header-widget__callback-button--mob ' . esc_attr($button_class) . '">' . esc_html($button_text) . '</a>';
                             }
                         } elseif ($button_type === 'submit') {
                             $data_src = (!empty($settings['enable_popup']) && $settings['enable_popup'] === 'yes' && !empty($popup_id)) ? ' data-mfp-src="#' . esc_attr($popup_id) . '"' : '';
-                            echo '<button type="button" ' . $button_id . ' class="header-widget__callback-button header-widget__button  header-widget__callback-button--mob ' . esc_attr($button_class) . '"' . $data_src . '>' . esc_html($button_text) . '</button>';
+                            echo '<button type="button" ' . $button_id_attr . ' class="header-widget__callback-button header-widget__button  header-widget__callback-button--mob ' . esc_attr($button_class) . '"' . $data_src . '>' . esc_html($button_text) . '</button>';
                         }
                     }
                     ?>
@@ -1589,7 +1556,15 @@ class Custom_Header extends Widget_Base {
 
                     <?php
                     if (!empty($menu)) {
-                        $menu_items = wp_get_nav_menu_items($menu);
+                        // Используем тот же кеш что и для десктоп меню
+                        $cache_key = 'cw_menu_items_' . $menu;
+                        $menu_items = get_transient($cache_key);
+                        if ($menu_items === false) {
+                            $menu_items = wp_get_nav_menu_items($menu);
+                            if ($menu_items) {
+                                set_transient($cache_key, $menu_items, HOUR_IN_SECONDS);
+                            }
+                        }
                         if (!empty($menu_items)) {
                             $menu_tree = $this->build_menu_tree($menu_items);
                             echo '<nav class="header-widget__menu--mob">';
@@ -1600,21 +1575,6 @@ class Custom_Header extends Widget_Base {
                         }
                     }
                     ?>
-                    <?php if ($enable_polylang === 'yes' && $enable_polylang_mob === 'yes' && function_exists('pll_the_languages')): ?>
-                        <div class="header-widget__lang-switcher header-widget__lang-switcher--mob">
-                            <ul class="header-widget__lang-inline header-widget__lang-inline--mob">
-                                <?php
-                                pll_the_languages([
-                                    'show_flags' => ($polylang_show_flags === 'yes') ? 1 : 0,
-                                    'show_names' => ($polylang_show_names === 'yes') ? 1 : 0,
-                                    'hide_current' => ($polylang_hide_current === 'yes') ? 1 : 0,
-                                    'display_names_as' => 'name',
-                                ]);
-                                ?>
-                            </ul>
-                        </div>
-                    <?php endif; ?>
-
                     <?php if (!empty($social_icons_list) && $enable_icon_mob === "yes"): ?>
                         <div class="header-widget__social header-widget__social--mob">
                             <ul class="header-widget__social-icons">

@@ -2,14 +2,14 @@
 /**
  * Plugin Name: Combined Widgets & Header Menu
  * Description: Объединённый плагин: Elementor виджеты (SBalance) + Header Menu Helper. Включает CSS, JS анимации, форм-виджеты и функции для меню.
- * Version: 1.3.2
+ * Version: 1.3.3
  * Author: Alex
  * Text Domain: combined-widgets
  */
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-define( 'CW_VERSION', '1.3.2' );
+define( 'CW_VERSION', '1.3.3' );
 define( 'CW_PATH', plugin_dir_path( __FILE__ ) );
 define( 'CW_URL', plugin_dir_url( __FILE__ ) );
 
@@ -43,12 +43,23 @@ add_action( 'plugins_loaded', function () {
     \CW\Assets::init();
     
     // Clear contact forms cache when CF7 forms are saved/deleted
-    add_action( 'save_post_wpcf7_contact_form', function() {
+    add_action( 'save_post_wpcf7_contact_form', function( $post_id ) {
         delete_transient( 'cw_contact_forms_list' );
+        // Очищаем кеш заголовка формы
+        delete_transient( 'cw_form_title_' . $post_id );
     } );
     add_action( 'delete_post', function( $post_id ) {
         if ( get_post_type( $post_id ) === 'wpcf7_contact_form' ) {
             delete_transient( 'cw_contact_forms_list' );
+            delete_transient( 'cw_form_title_' . $post_id );
+        }
+    } );
+    
+    // Clear menu cache when menu is updated
+    add_action( 'wp_update_nav_menu', function( $menu_id ) {
+        $menu = wp_get_nav_menu_object( $menu_id );
+        if ( $menu ) {
+            delete_transient( 'cw_menu_items_' . $menu->slug );
         }
     } );
     
